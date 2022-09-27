@@ -1,6 +1,7 @@
+import sys
 import os
 import random
-import sys
+import screeninfo
 import tkinter
 
 # constantes globales
@@ -29,7 +30,8 @@ def main():
         effacer_console()
         exit('Programme interrompu par l\'utilisateur.')
     except Exception:
-        exit('Une erreur est survenue.')
+        effacer_console()
+        exit('Une erreur inconnue est survenue.')
 
 ##########################################################################
 #                                Niveau 0                                #
@@ -44,9 +46,7 @@ def initialisation():
 
     frequence_en_secondes = 2
 
-    choisir_mode_de_jeu()
-    choisir_taille_grille()
-    choisir_nombre_generations()
+    choisir_parametres()
     creer_grille_initiale()
     creer_fenetre()
     afficher_grille()
@@ -55,6 +55,8 @@ def vie():
     """
     Boucle principale du programme.
     """
+
+    global fenetre
 
     algorithmie()
     afficher_grille()
@@ -66,58 +68,14 @@ def vie():
 #                                Niveau 1                                #
 ##########################################################################
 
-def choisir_mode_de_jeu():
+def choisir_parametres():
     """
-    Demande à l'utilisateur de choisir un mode de jeu.
-    """
-
-    global nombre_voisins_naissance, nombre_voisins_survie
-
-    effacer_console()
-    print('\t1 - Jeu de la vie')
-    print('\t2 - Day & Night')
-
-    mode_de_jeu = demander_nombre('Entrez le numéro du mode de jeu : ', 1, 2)
-
-    if mode_de_jeu == 1:
-        nombre_voisins_naissance = [3]
-        nombre_voisins_survie = [2, 3]
-    else:
-        nombre_voisins_naissance = [3, 6, 7, 8]
-        nombre_voisins_survie = [3, 4, 6, 7, 8]
-
-def choisir_nombre_generations():
-    """
-    Demande à l'utilisateur de choisir le nombre de générations.
+    Demande à l'utilisateur de choisir les paramtètres initiaux du jeu.
     """
 
-    global nombre_generations, maximum_generations
-
-    effacer_console()
-    maximum_generations = demander_nombre('Entrez le nombre de générations (1-1000) : ', 1, 1000)
-
-    nombre_generations = 0
-
-def choisir_taille_grille():
-    """
-    Demande à l'utilisateur de choisir la taille de la grille.
-    """
-
-    global nombre_lignes, nombre_colonnes, taille_cellule
-
-    effacer_console()
-
-    nombre_lignes = demander_nombre('Entrez le nombre de lignes (10-100) : ', 10, 100)
-    nombre_colonnes = demander_nombre('Entrez le nombre de colonnes (10-100) : ', 10, 100)
-
-    if (nombre_lignes <= 30):
-        taille_cellule = 20
-    elif (nombre_lignes <= 50):
-        taille_cellule = 15
-    elif (nombre_lignes <= 70):
-        taille_cellule = 10
-    else:
-        taille_cellule = 8
+    choisir_mode_de_jeu()
+    choisir_taille_grille()
+    choisir_nombre_generations()
 
 def creer_grille_initiale():
     """
@@ -148,7 +106,6 @@ def creer_fenetre():
 
     fenetre = tkinter.Tk()
     fenetre.title('Jeu de la vie & Day and night')
-    fenetre.geometry(str(taille_cellule * nombre_colonnes) + 'x' + str(taille_cellule * nombre_lignes + 60))
     fenetre.resizable(False, False)
     fenetre.protocol('WM_DELETE_WINDOW', fermer_fenetre)
 
@@ -202,44 +159,56 @@ def algorithmie():
 #                                Niveau 2                                #
 ##########################################################################
 
-def effacer_console():
+def choisir_mode_de_jeu():
     """
-    Efface la console en utilisant une commande système basée sur le système d'exploitation de l'utilisateur.
+    Demande à l'utilisateur de choisir un mode de jeu.
     """
 
-    if sys.platform.startswith('win'):
-        os.system('cls')
+    global nombre_voisins_naissance, nombre_voisins_survie
 
-    elif sys.platform.startswith('linux'):
-        os.system('clear')
+    effacer_console()
+    print('\t1 - Jeu de la vie')
+    print('\t2 - Day & Night')
 
+    mode_de_jeu = demander_nombre('Entrez le numéro du mode de jeu : ', 1, 2)
+
+    if mode_de_jeu == 1:
+        nombre_voisins_naissance = [3]
+        nombre_voisins_survie = [2, 3]
     else:
-        print('Impossible d\'effacer la console. Votre OS n\'est pas supporté.\n\r')
+        nombre_voisins_naissance = [3, 6, 7, 8]
+        nombre_voisins_survie = [3, 4, 6, 7, 8]
 
-def demander_nombre(message, minimum, maximum):
+def choisir_nombre_generations():
     """
-    Demande à l'utilisateur d'entrer un nombre entier entre des limites données (minimum et maximum).
-
-    :param message : String - Chaîne de caractères à utiliser pour demander à l'utilisateur d'entrer des données.
-    :param minimum : Int - Limite inférieure.
-    :param maximum : Int - Limite supérieure.
-    
-    :return : La valeur d'entrée valide que l'utilisateur a saisie.
+    Demande à l'utilisateur de choisir le nombre de générations.
     """
 
-    while True:
-        try:
-            value = int(input(message))
-        except ValueError:
-            print('La saisie n\'est pas un nombre entier.')
-            continue
+    global nombre_generations, maximum_generations
 
-        if value < minimum or value > maximum:
-            print('La valeur doit être comprise entre {0} et {1}.'.format(minimum, maximum))
-        else:
-            break
+    effacer_console()
+    maximum_generations = demander_nombre('Entrez le nombre de générations (1-1000) : ', 1, 1000)
 
-    return value
+    nombre_generations = 0
+
+def choisir_taille_grille():
+    """
+    Demande à l'utilisateur de choisir la taille de la grille.
+    """
+
+    global nombre_lignes, nombre_colonnes, taille_cellule
+
+    effacer_console()
+
+    nombre_lignes = demander_nombre('Entrez le nombre de lignes (10-100) : ', 10, 100)
+    nombre_colonnes = demander_nombre('Entrez le nombre de colonnes (10-100) : ', 10, 100)
+
+    monitors = screeninfo.get_monitors()
+
+    min_viewport_width = min([monitor.width for monitor in monitors])
+    min_viewport_height = min([monitor.height for monitor in monitors]) - 300
+
+    taille_cellule = min(min_viewport_width // nombre_colonnes, min_viewport_height // nombre_lignes)
 
 def creer_grille_suivante():
     """
@@ -362,5 +331,48 @@ def fermer_fenetre():
     print('Fin du programme. Fenêtre fermée.')
 
     fenetre.destroy()
+
+##########################################################################
+#                                 Outils                                 #
+##########################################################################
+
+def effacer_console():
+    """
+    Efface la console en utilisant une commande système basée sur le système d'exploitation de l'utilisateur.
+    """
+
+    if sys.platform.startswith('win'):
+        os.system('cls')
+
+    elif sys.platform.startswith('linux'):
+        os.system('clear')
+
+    else:
+        print('Impossible d\'effacer la console. Votre OS n\'est pas supporté.')
+
+def demander_nombre(message, minimum, maximum):
+    """
+    Demande à l'utilisateur d'entrer un nombre entier entre des limites données (minimum et maximum).
+
+    :param message : String - Chaîne de caractères à utiliser pour demander à l'utilisateur d'entrer des données.
+    :param minimum : Int - Limite inférieure.
+    :param maximum : Int - Limite supérieure.
+    
+    :return : La valeur d'entrée valide que l'utilisateur a saisie.
+    """
+
+    while True:
+        try:
+            value = int(input(message))
+        except ValueError:
+            print('La saisie n\'est pas un nombre entier.')
+            continue
+
+        if value < minimum or value > maximum:
+            print('La valeur doit être comprise entre {0} et {1}.'.format(minimum, maximum))
+        else:
+            break
+
+    return value
 
 main()
